@@ -78,35 +78,32 @@ case "$user_input" in
 
     z|Z)
         echo "Configuring ROS Humble for zsh..."
-    target=dump.txt
-    marker="# >>> ROS Humble setup >>>"
 
-    if ! grep -qF "$marker" "$target" 2>/dev/null; then
-      cat >> "$target" <<'EOF'
+        # Append configurations to ~/.zshrc
+        {
+            echo ""
+            echo "# ROS Humble setup"
+            echo "source /opt/ros/humble/setup.zsh"
+            echo "source /usr/share/colcon_cd/function/colcon_cd.sh"
+            echo "export _colcon_cd_root=/opt/ros/humble/"
+            echo "source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.zsh"
+        } >> ~/.zshrc
 
-# >>> ROS Humble setup >>>
-# Shell: zsh
-source /opt/ros/humble/setup.zsh
-source /usr/share/colcon_cd/function/colcon_cd.sh
-export _colcon_cd_root=/opt/ros/humble/
-source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.zsh
+        echo "eval \"$(register-python-argcomplete3 ros2)\"" >> ~/.zshrc
+        eval "\"$(register-python-argcomplete3 colcon)\"" >> ~/.zshrc
 
-# Ensure completion frameworks are initialized
-autoload -Uz compinit; compinit
-autoload -Uz +X bashcompinit; bashcompinit
+        # --- Ensure completion is initialized ---
+        echo "autoload -Uz compinit; compinit" >> ~/.zshrc
+        echo "autoload -Uz +X bashcompinit; bashcompinit" >> ~/.zshrc
 
-# Argcomplete for ros2/colcon (if available)
-if command -v register-python-argcomplete3 >/dev/null 2>&1; then
-  eval "$(register-python-argcomplete3 ros2)"
-  eval "$(register-python-argcomplete3 colcon)"
-fi
-# <<< ROS Humble setup <<<
-EOF
-      echo "Setup added to dump.txt. Reload with: source dump.txt"
-    else
-      echo "ROS Humble block already present in dump.txt (skipped)."
-    fi
-    ;;
+        # --- Argcomplete v2 for ros2/colcon ---
+        echo "if command -v register-python-argcomplete3 >/dev/null; then" >> ~/.zshrc
+        echo "  eval \"$(register-python-argcomplete3 ros2)\"" >> ~/.zshrc
+        echo "  eval \"$(register-python-argcomplete3 colcon)\"" >> ~/.zshrc
+        echo "fi" >> ~/.zshrc
+
+        echo "Setup added to ~/.zshrc. Reload with: source ~/.zshrc"
+        ;;
 
     *)
         echo "Invalid input. Use 'b' for bash or 'z' for zsh."

@@ -1,0 +1,18 @@
+
+# >>> ROS Humble setup >>>
+# Shell: zsh
+source /opt/ros/humble/setup.zsh
+source /usr/share/colcon_cd/function/colcon_cd.sh
+export _colcon_cd_root=/opt/ros/humble/
+source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.zsh
+
+# Ensure completion frameworks are initialized
+autoload -Uz compinit; compinit
+autoload -Uz +X bashcompinit; bashcompinit
+
+# Argcomplete for ros2/colcon (if available)
+if command -v register-python-argcomplete3 >/dev/null 2>&1; then
+  eval "$(register-python-argcomplete3 ros2)"
+  eval "$(register-python-argcomplete3 colcon)"
+fi
+# <<< ROS Humble setup <<<
